@@ -4,9 +4,12 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
-    "start": "node server-combined.js",
+    "start": "node server-supabase.js",
+    "start:supabase": "node server-supabase.js",
+    "start:json": "node server-combined.js",
     "start:original": "node server.js",
-    "dev": "node --watch server-combined.js"
+    "dev": "node --watch server-supabase.js",
+    "dev:json": "node --watch server-combined.js"
   },
   "dependencies": {
     "@supabase/supabase-js": "^2.110.0",
