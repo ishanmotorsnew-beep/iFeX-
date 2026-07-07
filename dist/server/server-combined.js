@@ -16,7 +16,11 @@ const PORT = process.env.PORT || 3000;
 const ENV = process.env.NODE_ENV || 'production';
 
 // Middleware
-app.use(cors());
+app.use(cors({
+  origin: process.env.CORS_ORIGIN || '*',
+  credentials: true,
+  optionsSuccessStatus: 200
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
