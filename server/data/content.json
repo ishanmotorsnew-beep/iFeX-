@@ -95,7 +95,7 @@
       "id": "p1783187321526",
       "title": "Developed the Mobile Application for SlipX",
       "category": "Mobile",
-      "summary": "Developed the **SlipX Mobile Application** for **slipx.online**, replicating the web platform's interface and features. The app enables secure payment slip verification, fraud detection, and includes **full Admin Panel access** for managing users and verification activities directly from mobile.",
+      "summary": "Developed the SlipX Mobile Application for 'slipx.online', replicating the web platform's interface and features. The app enables secure payment slip verification, fraud detection, and includes Full Admin Panel access for managing users and verification activities directly from mobile.",
       "tags": [
         "Flutter",
         "Dart",
@@ -103,11 +103,11 @@
         "MySQL"
       ],
       "featured": true,
-      "image": "/uploads/1783187087173-918376987.png",
+      "image": "http://localhost:4000/uploads/1783187087173-918376987.png",
       "images": [
-        "/uploads/1783187087173-918376987.png",
-        "/uploads/1783188155656-844776913.png",
-        "/uploads/1783188159683-112521112.png"
+        "http://localhost:4000/uploads/1783187087173-918376987.png",
+        "http://localhost:4000/uploads/1783188155656-844776913.png",
+        "http://localhost:4000/uploads/1783188159683-112521112.png"
       ]
     },
     {
@@ -123,11 +123,11 @@
         "Custom Properties"
       ],
       "featured": true,
-      "image": "/uploads/1783188369221-329488941.png",
+      "image": "http://localhost:4000/uploads/1783188369221-329488941.png",
       "images": [
-        "/uploads/1783188369221-329488941.png",
-        "/uploads/1783188385611-578017858.png",
-        "/uploads/1783188391696-790423947.png"
+        "http://localhost:4000/uploads/1783188369221-329488941.png",
+        "http://localhost:4000/uploads/1783188385611-578017858.png",
+        "http://localhost:4000/uploads/1783188391696-790423947.png"
       ]
     },
     {
@@ -143,11 +143,11 @@
         "MySQL"
       ],
       "featured": true,
-      "image": "/uploads/1783186110109-833355707.png",
+      "image": "http://localhost:4000/uploads/1783186110109-833355707.png",
       "images": [
-        "/uploads/1783186110109-833355707.png",
-        "/uploads/1783188416870-243305612.png",
-        "/uploads/1783188451386-465488137.png"
+        "http://localhost:4000/uploads/1783186110109-833355707.png",
+        "http://localhost:4000/uploads/1783188416870-243305612.png",
+        "http://localhost:4000/uploads/1783188451386-465488137.png"
       ]
     }
   ]
