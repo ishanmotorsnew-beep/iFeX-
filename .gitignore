@@ -3,7 +3,6 @@ frontend/node_modules/
 server/node_modules/
 frontend/dist/
 frontend/build/
-server/uploads/*
 .env
 frontend/.env
 server/.env
