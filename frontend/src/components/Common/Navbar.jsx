@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { Link, NavLink } from 'react-router-dom';
-import { AnimatePresence, motion } from 'framer-motion';
+import { motion } from 'framer-motion';
 import { Menu, X } from 'lucide-react';
 import Button from './Button';
 import { useContent } from '../../context/ContentContext';
@@ -10,7 +10,6 @@ const BASE_NAV_LINKS = [
   { to: '/about', label: 'About' },
   { to: '/services', label: 'Services' },
   { to: '/portfolio', label: 'Portfolio' },
-  { to: '/pricing', label: 'Pricing' },
 ];
 
 export default function Navbar() {
@@ -45,7 +44,7 @@ export default function Navbar() {
     <header className="fixed inset-x-0 top-3 z-50 px-3 sm:px-6 lg:px-8">
       <div className="mx-auto flex h-14 max-w-4xl items-center justify-between gap-3 sm:h-16">
         <Link to="/" className="group shrink-0" aria-label="iFeX International home">
-          <span className="flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-white/10 shadow-[0_18px_35px_rgba(6,182,212,0.14)] backdrop-blur-2xl transition-transform duration-300 group-hover:scale-105 sm:h-16 sm:w-16">
+          <span className="flex h-12 w-12 items-center justify-center rounded-full border border-white/15 bg-white/10 shadow-[0_18px_35px_rgba(6,182,212,0.14)] backdrop-blur-2xl transition-transform duration-200 group-hover:scale-105 sm:h-16 sm:w-16">
             <img
               src="/logo.png"
               alt="iFeX International logo"
@@ -55,12 +54,12 @@ export default function Navbar() {
         </Link>
 
         <nav
-          className={`liquid-glass-navbar flex h-14 flex-1 items-center justify-between rounded-full px-3 transition-all duration-300 sm:h-16 sm:px-6 ${
+          className={`liquid-glass-navbar flex h-14 flex-1 items-center justify-between rounded-full px-3 transition-all duration-200 sm:h-16 sm:px-6 ${
             scrolled ? 'shadow-[0_18px_45px_rgba(2,6,23,0.35)]' : 'shadow-[0_14px_35px_rgba(2,6,23,0.25)]'
           }`}
         >
-          <div className="flex flex-1 items-center justify-center">
-            <ul className="hidden items-center justify-center gap-2 md:flex">
+          <div className="hidden flex-1 items-center justify-center md:flex">
+            <ul className="flex items-center justify-center gap-2">
               {navLinks.map((link) => (
                 <li key={link.to}>
                   <NavLink to={link.to} className={linkClass}>
@@ -71,7 +70,7 @@ export default function Navbar() {
                           <motion.span
                             layoutId="nav-underline"
                             className="absolute -bottom-1 left-0 right-0 h-[2px] rounded-full bg-gradient-to-r from-electric to-cyan"
-                            transition={{ type: 'spring', stiffness: 380, damping: 30 }}
+                            transition={{ type: 'spring', stiffness: 320, damping: 28 }}
                           />
                         )}
                       </span>
@@ -82,9 +81,9 @@ export default function Navbar() {
             </ul>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="ml-auto flex items-center gap-2 sm:gap-3">
             <div className="hidden md:block">
-              <Button Component={Link} to="/contact" className="px-5 py-2.5 text-sm">
+              <Button Component={Link} to="/contact" className="px-4 py-2 text-sm sm:px-5 sm:py-2.5">
                 Get in Touch
               </Button>
             </div>
@@ -101,46 +100,32 @@ export default function Navbar() {
         </nav>
       </div>
 
-      {/* Mobile menu */}
-      <AnimatePresence>
-        {mobileOpen && (
-          <motion.div
-            initial={{ opacity: 0, height: 0 }}
-            animate={{ opacity: 1, height: 'auto' }}
-            exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.28, ease: [0.16, 1, 0.3, 1] }}
-            className="md:hidden fixed left-0 right-0 top-16 bottom-0 z-50 overflow-auto border-t border-white/10 bg-slate-950/90 backdrop-blur-2xl"
-          >
-            <ul className="section-container flex flex-col gap-1 py-6">
-              {navLinks.map((link) => (
-                <li key={link.to}>
-                  <NavLink
-                    to={link.to}
-                    onClick={() => setMobileOpen(false)}
-                    className={({ isActive }) =>
-                      `block rounded-lg px-4 py-3 text-base font-medium transition-colors ${
-                        isActive ? 'bg-white/[0.06] text-white' : 'text-white/60 hover:text-white'
-                      }`
-                    }
-                  >
-                    {link.label}
-                  </NavLink>
-                </li>
-              ))}
-              <li className="pt-3">
-                <Button
-                  Component={Link}
-                  to="/contact"
+      {mobileOpen && (
+        <div className="fixed inset-x-0 top-16 bottom-0 z-50 overflow-auto border-t border-white/10 bg-slate-950/95 backdrop-blur-2xl md:hidden">
+          <ul className="section-container flex flex-col gap-1 py-6">
+            {navLinks.map((link) => (
+              <li key={link.to}>
+                <NavLink
+                  to={link.to}
                   onClick={() => setMobileOpen(false)}
-                  className="w-full"
+                  className={({ isActive }) =>
+                    `block rounded-lg px-4 py-3 text-base font-medium transition-colors ${
+                      isActive ? 'bg-white/[0.06] text-white' : 'text-white/60 hover:text-white'
+                    }`
+                  }
                 >
-                  Get in Touch
-                </Button>
+                  {link.label}
+                </NavLink>
               </li>
-            </ul>
-          </motion.div>
-        )}
-      </AnimatePresence>
+            ))}
+            <li className="pt-3">
+              <Button Component={Link} to="/contact" onClick={() => setMobileOpen(false)} className="w-full">
+                Get in Touch
+              </Button>
+            </li>
+          </ul>
+        </div>
+      )}
     </header>
   );
 }

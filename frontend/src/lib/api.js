@@ -3,6 +3,7 @@ const ADMIN_TOKEN_KEY = 'ifex_admin_token';
 // Use environment variable for API URL, fallback to the Render backend for production
 const API_BASE = import.meta.env.VITE_API_URL || 'https://ifex-international-backend.onrender.com/api';
 const API_ORIGIN = API_BASE.startsWith('http') ? new URL(API_BASE).origin : window.location.origin;
+const PUBLIC_IMAGE_BASE = 'https://raw.githubusercontent.com/ishanmotorsnew-beep/iFeX-/main/server/uploads';
 
 function isLocalHostname(hostname) {
   return ['localhost', '127.0.0.1', '0.0.0.0', '::1'].includes(hostname);
@@ -11,13 +12,16 @@ function isLocalHostname(hostname) {
 function resolveImageUrl(src) {
   if (!src) return src;
   if (src.startsWith('/uploads/')) {
-    return `${API_ORIGIN}${src}`;
+    return `${PUBLIC_IMAGE_BASE}${src.replace('/uploads', '')}`;
   }
   if (src.startsWith('http://') || src.startsWith('https://')) {
     try {
       const url = new URL(src);
       if (isLocalHostname(url.hostname)) {
-        return `${API_ORIGIN}${url.pathname}${url.search}${url.hash}`;
+        return `${PUBLIC_IMAGE_BASE}${url.pathname.replace('/uploads', '')}${url.search}${url.hash}`;
+      }
+      if (url.pathname.startsWith('/uploads/')) {
+        return `${PUBLIC_IMAGE_BASE}${url.pathname.replace('/uploads', '')}${url.search}${url.hash}`;
       }
       return src;
     } catch {

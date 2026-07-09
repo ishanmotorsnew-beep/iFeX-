@@ -27,6 +27,9 @@ export function buildPublicImageUrl(req, imagePath) {
       if (isLocalHostname(url.hostname)) {
         return `${getRequestBaseUrl(req)}${url.pathname}${url.search}${url.hash}`;
       }
+      if (url.pathname.startsWith('/uploads/')) {
+        return `https://raw.githubusercontent.com/ishanmotorsnew-beep/iFeX-/main/server/uploads${url.pathname.replace('/uploads', '')}${url.search}${url.hash}`;
+      }
       return imagePath;
     } catch {
       return imagePath;
@@ -34,7 +37,7 @@ export function buildPublicImageUrl(req, imagePath) {
   }
 
   if (imagePath.startsWith('/uploads/')) {
-    return `${getRequestBaseUrl(req)}${imagePath}`;
+    return `https://raw.githubusercontent.com/ishanmotorsnew-beep/iFeX-/main/server/uploads${imagePath.replace('/uploads', '')}`;
   }
 
   return imagePath;
