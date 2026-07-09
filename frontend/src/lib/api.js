@@ -1,13 +1,28 @@
 const ADMIN_TOKEN_KEY = 'ifex_admin_token';
 
-// Use environment variable for API URL, fallback to relative path for dev
-const API_BASE = import.meta.env.VITE_API_URL || '/api';
+// Use environment variable for API URL, fallback to the Render backend for production
+const API_BASE = import.meta.env.VITE_API_URL || 'https://ifex-international-backend.onrender.com/api';
 const API_ORIGIN = API_BASE.startsWith('http') ? new URL(API_BASE).origin : window.location.origin;
+
+function isLocalHostname(hostname) {
+  return ['localhost', '127.0.0.1', '0.0.0.0', '::1'].includes(hostname);
+}
 
 function resolveImageUrl(src) {
   if (!src) return src;
   if (src.startsWith('/uploads/')) {
     return `${API_ORIGIN}${src}`;
+  }
+  if (src.startsWith('http://') || src.startsWith('https://')) {
+    try {
+      const url = new URL(src);
+      if (isLocalHostname(url.hostname)) {
+        return `${API_ORIGIN}${url.pathname}${url.search}${url.hash}`;
+      }
+      return src;
+    } catch {
+      return src;
+    }
   }
   return src;
 }

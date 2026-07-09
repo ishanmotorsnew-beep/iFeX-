@@ -167,7 +167,6 @@ app.post('/api/contact', contactLimiter, contactValidationRules, async (req, res
 app.get('/api/content', async (req, res) => {
   try {
     const content = await readContent();
-    const origin = `${req.protocol}://${req.get('host')}`;
     const normalizeProject = (project) => ({
       ...project,
       image: buildPublicImageUrl(req, project.image),
@@ -181,9 +180,7 @@ app.get('/api/content', async (req, res) => {
     };
 
     if (normalized.company) {
-      if (normalized.company.logo && normalized.company.logo.startsWith('/uploads/')) {
-        normalized.company.logo = `${origin}${normalized.company.logo}`;
-      }
+      normalized.company.logo = buildPublicImageUrl(req, normalized.company.logo);
     }
 
     res.json({ success: true, data: normalized });

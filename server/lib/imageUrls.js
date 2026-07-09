@@ -14,11 +14,23 @@ function getRequestBaseUrl(req) {
   return `${protocol}://${host}`;
 }
 
+function isLocalHostname(hostname) {
+  return ['localhost', '127.0.0.1', '0.0.0.0', '::1'].includes(hostname);
+}
+
 export function buildPublicImageUrl(req, imagePath) {
   if (!imagePath) return imagePath;
 
   if (imagePath.startsWith('http://') || imagePath.startsWith('https://')) {
-    return imagePath;
+    try {
+      const url = new URL(imagePath);
+      if (isLocalHostname(url.hostname)) {
+        return `${getRequestBaseUrl(req)}${url.pathname}${url.search}${url.hash}`;
+      }
+      return imagePath;
+    } catch {
+      return imagePath;
+    }
   }
 
   if (imagePath.startsWith('/uploads/')) {

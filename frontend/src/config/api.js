@@ -2,7 +2,7 @@
 
 const API_URL =
   import.meta.env.VITE_API_URL ||
-  "http://localhost:4000";
+  "https://ifex-international-backend.onrender.com/api";
 
 export const api = (path = "") => {
   return `${API_URL}${path}`;
