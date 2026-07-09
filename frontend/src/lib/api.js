@@ -59,12 +59,23 @@ export async function fetchContent() {
 
 
 export async function submitContact(values) {
-  const res = await fetch(`${API_BASE}/contact`, {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify(values),
+  const formData = new FormData();
+  formData.append('access_key', import.meta.env.VITE_WEB3FORMS_ACCESS_KEY || 'de238b20-623f-4602-a6f8-9c6dd50eb1da');
+
+  Object.entries(values).forEach(([key, value]) => {
+    if (value) formData.append(key, String(value));
   });
-  return handleResponse(res);
+
+  const res = await fetch('https://api.web3forms.com/submit', {
+    method: 'POST',
+    body: formData,
+  });
+
+  const data = await res.json().catch(() => ({}));
+  if (!res.ok || !data.success) {
+    throw new Error(data?.message || 'Something went wrong. Please try again.');
+  }
+  return data;
 }
 
 // --- Admin auth -------------------------------------------------------------

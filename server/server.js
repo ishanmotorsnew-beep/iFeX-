@@ -2,7 +2,6 @@ import 'dotenv/config';
 import express from 'express';
 import cors from 'cors';
 import helmet from 'helmet';
-import nodemailer from 'nodemailer';
 import multer from 'multer';
 import { v2 as cloudinary } from 'cloudinary';
 import streamifier from 'streamifier';
@@ -80,31 +79,7 @@ if (process.env.CLOUDINARY_CLOUD_NAME && process.env.CLOUDINARY_API_KEY && proce
 }
 
 // --- Mail transport ----------------------------------------------------
-const EMAIL_PROVIDER = (process.env.EMAIL_PROVIDER || 'web3forms').toLowerCase();
-const SMTP_USER = process.env.SMTP_USER;
-const CONTACT_SENDER_EMAIL = process.env.CONTACT_SENDER_EMAIL || SMTP_USER;
-const CONTACT_RECEIVER_EMAIL = process.env.CONTACT_RECEIVER_EMAIL || SMTP_USER;
-const WEB3FORMS_ACCESS_KEY = process.env.WEB3FORMS_ACCESS_KEY;
-
-function createSmtpTransporter() {
-  if (!SMTP_USER || !process.env.SMTP_PASS || !process.env.SMTP_HOST) return null;
-
-  const port = Number(process.env.SMTP_PORT || 587);
-  const secure = String(process.env.SMTP_SECURE || '').toLowerCase() === 'true' || port === 465;
-
-  return nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port,
-    secure, // true only for 465. Use false for 587 STARTTLS.
-    auth: { user: SMTP_USER, pass: process.env.SMTP_PASS },
-    requireTLS: port === 587,
-    connectionTimeout: 15000,
-    greetingTimeout: 15000,
-    socketTimeout: 20000,
-  });
-}
-
-const transporter = EMAIL_PROVIDER === 'smtp' ? createSmtpTransporter() : null;
+const WEB3FORMS_ACCESS_KEY = process.env.WEB3FORMS_ACCESS_KEY?.trim();
 
 async function sendViaWeb3Forms({ name, email, phone, company, service, budget, message }) {
   if (!WEB3FORMS_ACCESS_KEY) {
@@ -136,17 +111,6 @@ async function sendViaWeb3Forms({ name, email, phone, company, service, budget, 
 }
 
 async function sendContactEmail(payload) {
-  if (EMAIL_PROVIDER === 'smtp') {
-    if (!transporter) throw new Error('SMTP is not configured.');
-    return transporter.sendMail({
-      from: `"iFeX Website" <${CONTACT_SENDER_EMAIL}>`,
-      to: CONTACT_RECEIVER_EMAIL,
-      replyTo: payload.email,
-      subject: `New Inquiry: ${payload.service} — ${payload.name}`,
-      html: buildEmailHtml(payload),
-    });
-  }
-
   return sendViaWeb3Forms(payload);
 }
 
@@ -160,37 +124,6 @@ const contactValidationRules = [
   body('budget').optional({ checkFalsy: true }).trim().isLength({ max: 100 }).escape(),
   body('message').trim().notEmpty().withMessage('Message is required.').isLength({ min: 20, max: 5000 }).withMessage('Message must be between 20 and 5000 characters.').escape(),
 ];
-
-function buildEmailHtml({ name, email, phone, company, service, budget, message }) {
-  const row = (label, value) =>
-    value
-      ? `<tr>
-           <td style="padding:10px 16px;color:#64748B;font-size:12px;text-transform:uppercase;letter-spacing:0.08em;">${label}</td>
-           <td style="padding:10px 16px;color:#0A0F1D;font-size:14px;">${value}</td>
-         </tr>`
-      : '';
-
-  return `
-  <div style="background:#F8FAFC;padding:32px;font-family:Arial,Helvetica,sans-serif;">
-    <div style="max-width:560px;margin:0 auto;background:#FFFFFF;border-radius:12px;overflow:hidden;border:1px solid #E2E8F0;">
-      <div style="background:linear-gradient(120deg,#2563EB,#06B6D4);padding:24px 32px;">
-        <h1 style="color:#FFFFFF;font-size:18px;margin:0;">New Project Inquiry — iFeX International</h1>
-      </div>
-      <table style="width:100%;border-collapse:collapse;">
-        ${row('Name', name)}
-        ${row('Email', email)}
-        ${row('Phone', phone)}
-        ${row('Company', company)}
-        ${row('Service Needed', service)}
-        ${row('Budget Range', budget)}
-      </table>
-      <div style="padding:16px 32px 28px;">
-        <p style="color:#64748B;font-size:12px;text-transform:uppercase;letter-spacing:0.08em;margin:0 0 8px;">Message</p>
-        <p style="color:#0A0F1D;font-size:14px;line-height:1.6;white-space:pre-wrap;margin:0;">${message}</p>
-      </div>
-    </div>
-  </div>`;
-}
 
 // --- Routes ----------------------------------------------------------------
 app.get('/api/health', (req, res) => {
@@ -213,7 +146,7 @@ app.post('/api/contact', contactLimiter, contactValidationRules, async (req, res
     const info = await sendContactEmail({ name, email, phone, company, service, budget, message });
 
     // eslint-disable-next-line no-console
-    console.log('Contact email sent:', { provider: EMAIL_PROVIDER, messageId: info.messageId, response: info.response });
+    console.log('Contact email sent:', { provider: 'web3forms', messageId: info.messageId, response: info.response });
 
     return res.status(200).json({
       success: true,

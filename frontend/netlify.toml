@@ -12,4 +12,4 @@ status = 200
 
 [context.production.environment]
 # Set your production backend URL here
-VITE_API_URL = "https://your-render-backend-url.com/api"
+VITE_API_URL = "https://ifex-international-backend.onrender.com/api"
