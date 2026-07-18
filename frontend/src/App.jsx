@@ -7,6 +7,8 @@ import Footer from './components/Common/Footer';
 import ScrollToTop from './components/Common/ScrollToTop';
 import ProtectedRoute from './components/Admin/ProtectedRoute';
 import { useContent } from './context/ContentContext';
+import Warp, { warpPresets } from './components/ui/warp';
+
 // Home ships in the main bundle since it's the most common first paint.
 // Every other route is code-split so visitors only download what they
 // actually visit — keeps the initial JS payload lean (perf guideline:
@@ -37,8 +39,19 @@ export default function App() {
   const pricingVisible = company.pricingVisible !== false;
   const isAdminRoute = location.pathname.startsWith('/admin');
 
+  const passionPreset = warpPresets.find(p => p.name === 'Passion' || p.name === 'passion') || warpPresets[1];
+
   return (
-    <div className="min-h-screen flex flex-col overflow-x-hidden">
+    <div className="min-h-screen flex flex-col overflow-x-hidden relative">
+      {/* Global Animated Background */}
+      <div className="fixed inset-0 -z-50 pointer-events-none">
+        <Warp 
+          {...passionPreset.params} 
+          colors={['#000000', '#06096a']} 
+          style={{ width: '100%', height: '100%' }} 
+        />
+      </div>
+
       <ScrollToTop />
       {!isAdminRoute && <Navbar />}
       <main className="flex-1">

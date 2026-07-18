@@ -1,13 +1,15 @@
+import { Suspense, lazy } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { ArrowUpRight } from 'lucide-react';
 import Hero from '../components/Home/Hero';
-import ServicesOverview from '../components/Home/ServicesOverview';
-import WhyChooseUs from '../components/Home/WhyChooseUs';
-import TechStack from '../components/Home/TechStack';
-import CTA from '../components/Home/CTA';
 import SectionHeader from '../components/Common/SectionHeader';
 import { useContent } from '../context/ContentContext';
+
+const ServicesOverview = lazy(() => import('../components/Home/ServicesOverview'));
+const WhyChooseUs = lazy(() => import('../components/Home/WhyChooseUs'));
+const TechStack = lazy(() => import('../components/Home/TechStack'));
+const CTA = lazy(() => import('../components/Home/CTA'));
 
 const pageVariants = {
   initial: { opacity: 0, y: 20 },
@@ -39,7 +41,7 @@ function FeaturedProjects() {
             <Link to="/portfolio" className="group glass-card block h-full overflow-hidden">
               <div className="h-44 bg-electric-cyan bg-gradient-to-br from-electric/25 to-cyan/25 flex items-center justify-center border-b border-white/10 overflow-hidden">
                 {project.image ? (
-                  <img src={project.image} alt={project.title} className="h-full w-full object-cover" />
+                  <img src={project.image} alt={project.title} className="h-full w-full object-cover" loading="lazy" decoding="async" />
                 ) : (
                   <span className="text-3xl font-display font-bold text-white/30">
                     {project.title.charAt(0)}
@@ -68,11 +70,13 @@ export default function Home() {
   return (
     <motion.div variants={pageVariants} initial="initial" animate="animate">
       <Hero />
-      <ServicesOverview />
-      <WhyChooseUs />
-      <FeaturedProjects />
-      <TechStack />
-      <CTA />
+      <Suspense fallback={<div className="h-20 w-full" />}>
+        <ServicesOverview />
+        <WhyChooseUs />
+        <FeaturedProjects />
+        <TechStack />
+        <CTA />
+      </Suspense>
     </motion.div>
   );
 }

@@ -1,9 +1,26 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useState, Suspense, lazy, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Play, Workflow, ShieldCheck, UserCheck } from 'lucide-react';
 import Button from '../Common/Button';
-import GlobeCanvas from './GlobeCanvas';
+import Warp, { warpPresets } from '../ui/warp';
+
+const Spline = lazy(() => import('@splinetool/react-spline'));
+
+function SplineScene({ scene, className, onLoad }) {
+  return (
+    <Suspense fallback={
+        <div className="w-full h-full flex items-center justify-center">
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-white/50"></div>
+        </div>
+      }
+    >
+      <Spline className={className} scene={scene} onLoad={onLoad} />
+    </Suspense>
+  )
+}
+
+
 
 // Framer motion variants for left-hand content fade-in
 const containerVariants = {
@@ -28,12 +45,7 @@ const itemVariants = {
 };
 
 export default function Hero() {
-  const [settled, setSettled] = useState(false);
   const isMobile = typeof window !== 'undefined' && window.innerWidth < 768;
-
-  const handleSettle = useCallback(() => {
-    setSettled((prev) => (prev ? prev : true));
-  }, []);
 
   const heroMotion = {
     staggerChildren: isMobile ? 0.08 : 0.15,
@@ -50,60 +62,31 @@ export default function Hero() {
     },
   };
 
+  const nectarPreset = warpPresets.find(p => p.name === 'Nectar' || p.name === 'nectar') || warpPresets[0];
+
   return (
-    <section className="home-hero relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-[#0a0f1d] pt-20 pb-16">
+    <section className="home-hero relative min-h-screen w-full flex items-center justify-center overflow-hidden bg-transparent pt-20 pb-16">
       
-      {/* 1. Cinematic Cityscape Background */}
-      {/* Starting fade-in exactly during the globe drift phase (around 3.5s) */}
-      <motion.div
-        initial={{ opacity: 0, scale: 1.05 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: isMobile ? 0.6 : 2.0, delay: isMobile ? 0.1 : 3.2, ease: 'easeOut' }}
-        className="absolute inset-0 -z-20 bg-cover bg-center bg-no-repeat pointer-events-none"
-        style={{
-          backgroundImage: `url('/cityscape_bg.png')`,
-        }}
-      />
+      {/* Warp Animated Background */}
+      <div className="absolute inset-0 z-0 opacity-100">
+        <Warp 
+          {...nectarPreset.params} 
+          speed={2.0} 
+          softness={0.9} 
+          colors={['#f0edea', '#796b9e', '#f0edea', '#796b9e', '#0d1d5e', '#151310']} 
+          style={{ width: '100%', height: '100%' }} 
+        />
+      </div>
 
-      {/* 2. Premium Gradients and Vignette Overlays */}
-      {/* Top overlay to blend under the fixed navbar */}
-      <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-[#0a0f1d] to-transparent -z-10 pointer-events-none" />
-      
-      {/* Bottom overlay to fade cityscape into footer and other sections */}
-      <div className="absolute inset-x-0 bottom-0 h-44 bg-gradient-to-t from-[#0a0f1d] via-[#0a0f1d]/40 to-transparent -z-10 pointer-events-none" />
-      
-      {/* Left-side overlay to keep text highly legible */}
-      <div className="absolute inset-y-0 left-0 w-full md:w-3/5 bg-gradient-to-r from-[#0a0f1d] via-[#0a0f1d]/75 to-transparent -z-10 pointer-events-none" />
-
-      {/* Glowing spotlight behind the globe's settled position */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ duration: isMobile ? 0.4 : 1.8, delay: isMobile ? 0.2 : 3.8 }}
-        className="absolute top-1/2 right-[10%] -translate-y-1/2 w-[550px] h-[550px] rounded-full bg-cyan-500/10 blur-[130px] -z-15 pointer-events-none hidden md:block" 
-      />
-
-      {/* Side shine to brighten the hero and add atmosphere */}
-      <motion.div
-        initial={{ opacity: 0, x: 40 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: isMobile ? 0.5 : 1.5, delay: isMobile ? 0.1 : 0.8, ease: 'easeOut' }}
-        className="absolute top-1/2 right-0 -translate-y-1/2 h-[420px] w-[280px] rounded-full bg-gradient-to-l from-cyan-300/25 via-transparent to-transparent blur-3xl opacity-90 pointer-events-none hidden lg:block"
-      />
-
-      {/* 3. Interactive Anti-gravity 3D Particle Globe */}
-      <GlobeCanvas onSettle={handleSettle} />
+      {/* Subtle dark gradient overlay on the left for text legibility */}
+      <div className="absolute inset-y-0 left-0 w-full md:w-1/2 lg:w-3/5 bg-gradient-to-r from-[#151310]/90 via-[#151310]/40 to-transparent z-10 pointer-events-none" />
 
       {/* 4. DOM Layout Wrapper */}
       <div className="section-container w-full relative z-20 flex flex-col md:grid md:grid-cols-12 gap-8 items-center min-h-[calc(100vh-144px)]">
         
-        {/* Mobile Spacer to leave room for the centered globe during intro */}
-        <div className="h-[280px] md:hidden w-full shrink-0" aria-hidden="true" />
-
         {/* Left Side Content Column (takes 7 cols on desktop) */}
-        <div className="col-span-12 md:col-span-7 flex flex-col justify-center text-left">
+        <div className="col-span-12 md:col-span-7 flex flex-col justify-center text-left order-2 md:order-1">
           <AnimatePresence>
-            {settled && (
               <motion.div
                 variants={{
                   ...containerVariants,
@@ -190,12 +173,16 @@ export default function Hero() {
                   </Button>
                 </motion.div>
               </motion.div>
-            )}
           </AnimatePresence>
         </div>
 
-        {/* Right Side Spacer Column (takes 5 cols on desktop to frame the settled globe) */}
-        <div className="hidden md:block md:col-span-5 h-[400px] w-full shrink-0" aria-hidden="true" />
+        {/* Right Side Column - 3D Interactive Spline Scene */}
+        <div className="col-span-12 md:col-span-5 h-[380px] lg:h-[580px] w-full relative z-10 order-1 md:order-2">
+          <SplineScene 
+            className="w-full h-full object-cover" 
+            scene="https://prod.spline.design/kZDDjO5HuC9GJUM2/scene.splinecode"
+          />
+        </div>
       </div>
     </section>
   );

@@ -11,6 +11,9 @@
     "dev:all": "concurrently \"npm run dev\" \"npm run server\""
   },
   "dependencies": {
+    "@paper-design/shaders-react": "^0.0.77",
+    "@splinetool/react-spline": "^4.1.0",
+    "@splinetool/runtime": "^1.12.98",
     "framer-motion": "^11.2.10",
     "lucide-react": "^0.400.0",
     "react": "^18.3.1",
@@ -18,11 +21,11 @@
     "react-router-dom": "^6.24.0"
   },
   "devDependencies": {
-    "@vitejs/plugin-react": "^4.3.1",
+    "@vitejs/plugin-react": "^6.0.3",
     "autoprefixer": "^10.4.19",
     "concurrently": "^8.2.2",
     "postcss": "^8.4.38",
     "tailwindcss": "^3.4.4",
-    "vite": "^5.3.1"
+    "vite": "^8.1.5"
   }
 }

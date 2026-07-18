@@ -78,6 +78,8 @@ export default function Portfolio() {
                       src={project.images?.[0] || project.image}
                       alt={project.title}
                       className="h-full w-full object-cover"
+                      loading="lazy"
+                      decoding="async"
                     />
                   ) : (
                     <span className="text-4xl font-display font-bold text-white/30">
