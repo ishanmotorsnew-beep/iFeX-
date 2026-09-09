@@ -23,11 +23,25 @@ import { buildPublicImageUrl } from './lib/imageUrls.js';
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 4000;
-const CLIENT_ORIGIN = process.env.CLIENT_ORIGIN || 'http://localhost:5173';
+const CLIENT_ORIGINS = (process.env.CLIENT_ORIGIN || 'http://localhost:5173,https://ifex.kesug.com')
+  .split(',')
+  .map((origin) => origin.trim())
+  .filter(Boolean);
 
 // --- Core middleware -------------------------------------------------------
 app.use(helmet({ crossOriginResourcePolicy: false }));
-app.use(cors({ origin: CLIENT_ORIGIN }));
+app.use(
+  cors({
+    origin: (origin, callback) => {
+      if (!origin || CLIENT_ORIGINS.includes(origin)) {
+        callback(null, true);
+        return;
+      }
+      callback(new Error('Not allowed by CORS'));
+    },
+    credentials: true,
+  })
+);
 app.use(express.json({ limit: '10kb' }));
 
 // Serves uploaded portfolio images (e.g. /uploads/1719999999-cover.jpg)
